@@ -12,6 +12,7 @@ public class CustomInputManager : MonoBehaviour
     public static Action OnPressedA;
     public static Action OnPressedS;
     public static Action OnPressedD;
+    public static Action OnPressedLShift;
     public static Action OnPressedSpace;
     public static Action OnPressedEscape;
 
@@ -30,27 +31,38 @@ public class CustomInputManager : MonoBehaviour
         // Detect player inputs and invoke actions accordingly
         if (Input.GetKey(KeyCode.W))
         {
-            OnPressedW.Invoke();
+            OnPressedW?.Invoke();
+            Debug.Log("W");
         }
         if (Input.GetKey(KeyCode.A))
         {
-            OnPressedA.Invoke();
+            OnPressedA?.Invoke();
+            Debug.Log("A");
         }
         if (Input.GetKey(KeyCode.S))
         {
-            OnPressedS.Invoke();
+            OnPressedS?.Invoke();
+            Debug.Log("S");
         }
         if (Input.GetKey(KeyCode.D))
         {
-            OnPressedD.Invoke();
+            OnPressedD?.Invoke();
+            Debug.Log("D");
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            OnPressedLShift?.Invoke();
+            Debug.Log("LShift");
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            OnPressedSpace.Invoke();
+            OnPressedSpace?.Invoke();
+            Debug.Log("Space");
         }
         if (Input.GetKey(KeyCode.Escape))
         {
-            OnPressedEscape.Invoke();
+            OnPressedEscape?.Invoke();
+            Debug.Log("Escape");
         }
     }
 }

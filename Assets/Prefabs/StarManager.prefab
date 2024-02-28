@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   starPrefab: {fileID: 7603177147530709040, guid: 52ec9d98fe378fb408b0630bd80ec16f, type: 3}
-  totalStars: 50
+  totalStars: 60
+  denomOfFractionInBackgroundLayer: 5
   maxWidth: 11
   maxHeight: 6
   translateSpeed: 3

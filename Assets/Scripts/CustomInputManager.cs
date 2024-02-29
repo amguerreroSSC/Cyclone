@@ -15,6 +15,11 @@ public class CustomInputManager : MonoBehaviour
     public static Action OnPressedLShift;
     public static Action OnPressedSpace;
     public static Action OnPressedEscape;
+    public static Action OnPressedLMouse;
+    public static Action<Vector3, float> OnMouseMove;
+
+    Vector3 currentMousePos;
+    Vector3 mouseOrigin = new Vector3(Screen.width / 2, Screen.height / 2);
 
 
     private void Awake()
@@ -24,6 +29,12 @@ public class CustomInputManager : MonoBehaviour
             Destroy(this);
         else
             Instance = this;
+    }
+
+    private void Start()
+    {
+        currentMousePos = Input.mousePosition;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -63,6 +74,16 @@ public class CustomInputManager : MonoBehaviour
         {
             OnPressedEscape?.Invoke();
             Debug.Log("Escape");
+        }
+        if (currentMousePos != Input.mousePosition)
+        {
+            OnMouseMove?.Invoke((Input.mousePosition - currentMousePos), Vector3.Distance(currentMousePos, Input.mousePosition));
+            Debug.Log("OnMouseMove");
+            currentMousePos = Input.mousePosition;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnPressedLMouse?.Invoke();
         }
     }
 }

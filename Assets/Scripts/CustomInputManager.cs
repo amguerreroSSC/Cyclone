@@ -35,6 +35,7 @@ public class CustomInputManager : MonoBehaviour
     {
         currentMousePos = Input.mousePosition;
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update()

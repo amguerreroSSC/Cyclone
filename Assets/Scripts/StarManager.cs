@@ -59,21 +59,21 @@ public class StarManager : MonoBehaviour
         // Translate stars in 1st layer
         for (int i = 0; i < 19; i++)
         {
-            Stars[i].transform.position += dir * distance * Time.deltaTime;
+            Stars[i].transform.position += -dir * (distance * 2) * Time.deltaTime;
             //if (Stars[i].transform.position.x < -maxWidth)
             //    Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         // Translate stars in 2nd layer
         for (int i = 19; i < 39; i++)
         {
-            Stars[i].transform.position += dir * (distance / 3) * Time.deltaTime;
+            Stars[i].transform.position += -dir * (distance * 2 / 3) * Time.deltaTime;
             //if (Stars[i].transform.position.x < -maxWidth)
             //    Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         // Translate stars in 3rd layer
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += -dir * (distance / 5) * Time.deltaTime;
+            Stars[i].transform.position += dir * (distance * 2 / 5) * Time.deltaTime;
             //if (Stars[i].transform.position.x > maxWidth)
             //    Stars[i].transform.position = new Vector3(-maxWidth, Random.Range(-maxHeight, maxHeight));
         }

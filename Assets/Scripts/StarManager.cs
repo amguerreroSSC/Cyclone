@@ -11,30 +11,32 @@ public class StarManager : MonoBehaviour
     [SerializeField] float maxWidth;
     [SerializeField] float maxHeight;
     [SerializeField] float translateSpeed;
+    [SerializeField] float rollSpeed;
 
     GameObject[] Stars;
+    GameObject starsParent;
     
 
     private void OnEnable()
     {
-        CustomInputManager.OnPressedD += TranslateLeft;
-        CustomInputManager.OnPressedA += TranslateRight;
-        CustomInputManager.OnPressedS += TranslateTowardsOrigin;
-        CustomInputManager.OnPressedW += TranslateAwayFromOrigin;
-        CustomInputManager.OnMouseMove += Rotate;
-        //CustomInputManager.OnPressedLShift += TranslateTowardsOrigin;
-        //CustomInputManager.OnPressedSpace += TranslateAwayFromOrigin;
+        CustomInputManager.OnPressedQ += RollRight;
+        CustomInputManager.OnPressedD += YawRight;
+        CustomInputManager.OnPressedA += YawLeft;
+        CustomInputManager.OnPressedS += PitchDown;
+        CustomInputManager.OnPressedW += PitchUp;
+        //CustomInputManager.OnMouseMove += Rotate;
+        CustomInputManager.OnPressedLShift += TranslateAwayFromOrigin;
     }
 
     private void OnDisable()
     {
-        CustomInputManager.OnPressedD -= TranslateLeft;
-        CustomInputManager.OnPressedA -= TranslateRight;
-        CustomInputManager.OnPressedS -= TranslateTowardsOrigin;
-        CustomInputManager.OnPressedW -= TranslateAwayFromOrigin;
-        CustomInputManager.OnMouseMove -= Rotate;
-        //CustomInputManager.OnPressedLShift -= TranslateTowardsOrigin;
-        //CustomInputManager.OnPressedSpace -= TranslateAwayFromOrigin;
+        CustomInputManager.OnPressedQ -= RollRight;
+        CustomInputManager.OnPressedD -= YawRight;
+        CustomInputManager.OnPressedA -= YawLeft;
+        CustomInputManager.OnPressedS -= PitchDown;
+        CustomInputManager.OnPressedW -= PitchUp;
+        //CustomInputManager.OnMouseMove -= Rotate;
+        CustomInputManager.OnPressedLShift -= TranslateAwayFromOrigin;
     }
 
     // Start is called before the first frame update
@@ -46,7 +48,7 @@ public class StarManager : MonoBehaviour
     private void Initialize()
     {
         Stars = new GameObject[totalStars];
-        GameObject starsParent = Instantiate(new GameObject("Stars"));
+        starsParent = Instantiate(new GameObject("Stars"));
         for(int i = 0; i < totalStars; i++)
         {
             Stars[i] = Instantiate(starPrefab, RandomPos(), Quaternion.identity, starsParent.transform);
@@ -60,51 +62,20 @@ public class StarManager : MonoBehaviour
         for (int i = 0; i < 19; i++)
         {
             Stars[i].transform.position += -dir * (distance * 2) * Time.deltaTime;
-            //if (Stars[i].transform.position.x < -maxWidth)
-            //    Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         // Translate stars in 2nd layer
         for (int i = 19; i < 39; i++)
         {
             Stars[i].transform.position += -dir * (distance * 2 / 3) * Time.deltaTime;
-            //if (Stars[i].transform.position.x < -maxWidth)
-            //    Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         // Translate stars in 3rd layer
         for (int i = 39; i < totalStars; i++)
         {
             Stars[i].transform.position += dir * (distance * 2 / 5) * Time.deltaTime;
-            //if (Stars[i].transform.position.x > maxWidth)
-            //    Stars[i].transform.position = new Vector3(-maxWidth, Random.Range(-maxHeight, maxHeight));
         }
     }
 
-    private void TranslateLeft()
-    {
-        // Translate stars in 1st layer
-        for(int i = 0; i < 19; i++)
-        {
-            Stars[i].transform.position += Vector3.left * translateSpeed * Time.deltaTime;
-            if (Stars[i].transform.position.x < -maxWidth)
-                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
-        }
-        // Translate stars in 2nd layer
-        for (int i = 19; i < 39; i++)
-        {
-            Stars[i].transform.position += Vector3.left * (translateSpeed / 3) * Time.deltaTime;
-            if (Stars[i].transform.position.x < -maxWidth)
-                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
-        }
-        // Translate stars in 3rd layer
-        for (int i = 39; i < totalStars; i++)
-        {
-            Stars[i].transform.position += Vector3.left * (translateSpeed / 5) * Time.deltaTime;
-            if (Stars[i].transform.position.x < -maxWidth)
-                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
-        }
-    }
-
-    private void TranslateRight()
+    private void YawLeft()
     {
         for (int i = 0; i < 19; i++)
         {
@@ -126,7 +97,39 @@ public class StarManager : MonoBehaviour
         }
     }
 
-    private void TranslateUp()
+    private void YawRight()
+    {
+        for (int i = 0; i < 19; i++)
+        {
+            Stars[i].transform.position += Vector3.left * translateSpeed * Time.deltaTime;
+            if (Stars[i].transform.position.x < -maxWidth)
+                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
+        }
+        for (int i = 19; i < 39; i++)
+        {
+            Stars[i].transform.position += Vector3.left * (translateSpeed / 3) * Time.deltaTime;
+            if (Stars[i].transform.position.x < -maxWidth)
+                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
+        }
+        for (int i = 39; i < totalStars; i++)
+        {
+            Stars[i].transform.position += Vector3.left * (translateSpeed / 5) * Time.deltaTime;
+            if (Stars[i].transform.position.x < -maxWidth)
+                Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
+        }
+    }
+
+    private void RollRight()
+    {
+        starsParent.transform.Rotate(new Vector3(0, 0, 1) * rollSpeed * Time.deltaTime);
+    }
+
+    private void RollLeft()
+    {
+        starsParent.transform.Rotate(new Vector3(0, 0, -1) * rollSpeed * Time.deltaTime);
+    }
+
+    private void PitchDown()
     {
         for (int i = 0; i < 19; i++)
         {
@@ -142,13 +145,13 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.up * (translateSpeed / 5) * Time.deltaTime;
-            if (Stars[i].transform.position.y > maxHeight)
-                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), -maxHeight);
+            Stars[i].transform.position += Vector3.down * (translateSpeed / 5) * Time.deltaTime;
+            if (Stars[i].transform.position.y < -maxHeight)
+                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), maxHeight);
         }
     }
 
-    private void TranslateDown()
+    private void PitchUp()
     {
         for (int i = 0; i < 19; i++)
         {
@@ -164,9 +167,9 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.down * (translateSpeed / 5) * Time.deltaTime;
-            if (Stars[i].transform.position.y < -maxHeight)
-                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), maxHeight);
+            Stars[i].transform.position += Vector3.up * (translateSpeed / 5) * Time.deltaTime;
+            if (Stars[i].transform.position.y > maxHeight)
+                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), -maxHeight);
         }
     }
 
@@ -182,18 +185,6 @@ public class StarManager : MonoBehaviour
                 Stars[i].transform.position = new Vector3(Random.Range(-halfMaxWidth, halfMaxWidth), Random.Range(-halfMaxHeight, halfMaxHeight));
         }
     }
-
-    private void TranslateTowardsOrigin()
-    {
-        for (int i = 0; i < totalStars; i++)
-        {
-            Vector3 moveDir = Vector3.zero - Stars[i].transform.position;
-            Stars[i].transform.position += moveDir * (translateSpeed / 2) * Time.deltaTime;
-            if (Stars[i].transform.position.x > (-maxWidth / Random.Range(1, 100)) && Stars[i].transform.position.x < (maxWidth / Random.Range(1, 100)) && Stars[i].transform.position.y > (-maxHeight / Random.Range(1, 100)) && Stars[i].transform.position.y < (maxHeight / Random.Range(1, 100)))
-                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), Random.Range(-maxHeight, maxHeight));
-        }
-    }
-
 
     private Vector3 RandomPos()
     {

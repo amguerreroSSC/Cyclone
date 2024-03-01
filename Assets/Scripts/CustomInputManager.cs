@@ -12,10 +12,12 @@ public class CustomInputManager : MonoBehaviour
     public static Action OnPressedA;
     public static Action OnPressedS;
     public static Action OnPressedD;
+    public static Action OnPressedQ;
     public static Action OnPressedLShift;
     public static Action OnPressedSpace;
     public static Action OnPressedEscape;
     public static Action OnPressedLMouse;
+    public static Action OnReleasedLMouse;
     public static Action<Vector3, float> OnMouseMove;
 
     Vector3 currentMousePos;
@@ -61,6 +63,10 @@ public class CustomInputManager : MonoBehaviour
             OnPressedD?.Invoke();
             Debug.Log("D");
         }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            OnPressedQ?.Invoke();
+        }
         if (Input.GetKey(KeyCode.LeftShift))
         {
             OnPressedLShift?.Invoke();
@@ -85,6 +91,10 @@ public class CustomInputManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             OnPressedLMouse?.Invoke();
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            OnReleasedLMouse?.Invoke();
         }
     }
 }

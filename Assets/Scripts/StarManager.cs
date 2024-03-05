@@ -20,6 +20,7 @@ public class StarManager : MonoBehaviour
     private void OnEnable()
     {
         CustomInputManager.OnPressedQ += RollRight;
+        CustomInputManager.OnPressedE += RollLeft;
         CustomInputManager.OnPressedD += YawRight;
         CustomInputManager.OnPressedA += YawLeft;
         CustomInputManager.OnPressedS += PitchDown;
@@ -31,6 +32,7 @@ public class StarManager : MonoBehaviour
     private void OnDisable()
     {
         CustomInputManager.OnPressedQ -= RollRight;
+        CustomInputManager.OnPressedE -= RollLeft;
         CustomInputManager.OnPressedD -= YawRight;
         CustomInputManager.OnPressedA -= YawLeft;
         CustomInputManager.OnPressedS -= PitchDown;
@@ -77,6 +79,7 @@ public class StarManager : MonoBehaviour
 
     private void YawLeft()
     {
+        //RollLeft();
         for (int i = 0; i < 19; i++)
         {
             Stars[i].transform.position += Vector3.right * translateSpeed * Time.deltaTime;
@@ -85,13 +88,13 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 19; i < 39; i++)
         {
-            Stars[i].transform.position += Vector3.right * (translateSpeed / 3) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.right * (translateSpeed / 2) * Time.deltaTime;
             if (Stars[i].transform.position.x > maxWidth)
                 Stars[i].transform.position = new Vector3(-maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.right * (translateSpeed / 5) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.right * (translateSpeed / 3) * Time.deltaTime;
             if (Stars[i].transform.position.x > maxWidth)
                 Stars[i].transform.position = new Vector3(-maxWidth, Random.Range(-maxHeight, maxHeight));
         }
@@ -99,6 +102,7 @@ public class StarManager : MonoBehaviour
 
     private void YawRight()
     {
+        //RollRight();
         for (int i = 0; i < 19; i++)
         {
             Stars[i].transform.position += Vector3.left * translateSpeed * Time.deltaTime;
@@ -107,13 +111,13 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 19; i < 39; i++)
         {
-            Stars[i].transform.position += Vector3.left * (translateSpeed / 3) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.left * (translateSpeed / 2) * Time.deltaTime;
             if (Stars[i].transform.position.x < -maxWidth)
                 Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.left * (translateSpeed / 5) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.left * (translateSpeed / 3) * Time.deltaTime;
             if (Stars[i].transform.position.x < -maxWidth)
                 Stars[i].transform.position = new Vector3(maxWidth, Random.Range(-maxHeight, maxHeight));
         }
@@ -139,15 +143,15 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 19; i < 39; i++)
         {
-            Stars[i].transform.position += Vector3.up * (translateSpeed / 3) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.up * (translateSpeed / 2) * Time.deltaTime;
             if (Stars[i].transform.position.y > maxHeight)
                 Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), -maxHeight);
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.down * (translateSpeed / 5) * Time.deltaTime;
-            if (Stars[i].transform.position.y < -maxHeight)
-                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), maxHeight);
+            Stars[i].transform.position += Vector3.up * (translateSpeed / 3) * Time.deltaTime;
+            if (Stars[i].transform.position.y > maxHeight)
+                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), -maxHeight);
         }
     }
 
@@ -161,15 +165,15 @@ public class StarManager : MonoBehaviour
         }
         for (int i = 19; i < 39; i++)
         {
-            Stars[i].transform.position += Vector3.down * (translateSpeed / 3) * Time.deltaTime;
+            Stars[i].transform.position += Vector3.down * (translateSpeed / 2) * Time.deltaTime;
             if (Stars[i].transform.position.y < -maxHeight)
                 Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), maxHeight);
         }
         for (int i = 39; i < totalStars; i++)
         {
-            Stars[i].transform.position += Vector3.up * (translateSpeed / 5) * Time.deltaTime;
-            if (Stars[i].transform.position.y > maxHeight)
-                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), -maxHeight);
+            Stars[i].transform.position += Vector3.down * (translateSpeed / 3) * Time.deltaTime;
+            if (Stars[i].transform.position.y < -maxHeight)
+                Stars[i].transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), maxHeight);
         }
     }
 

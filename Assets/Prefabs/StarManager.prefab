@@ -49,5 +49,5 @@ MonoBehaviour:
   denomOfFractionInBackgroundLayer: 5
   maxWidth: 11
   maxHeight: 6
-  translateSpeed: 3
-  rollSpeed: 50
+  translateSpeed: 10
+  rollSpeed: 75

@@ -13,6 +13,7 @@ public class CustomInputManager : MonoBehaviour
     public static Action OnPressedS;
     public static Action OnPressedD;
     public static Action OnPressedQ;
+    public static Action OnPressedE;
     public static Action OnPressedLShift;
     public static Action OnPressedSpace;
     public static Action OnPressedEscape;
@@ -66,6 +67,10 @@ public class CustomInputManager : MonoBehaviour
         if (Input.GetKey(KeyCode.Q))
         {
             OnPressedQ?.Invoke();
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            OnPressedE?.Invoke();
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {

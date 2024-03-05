@@ -49,6 +49,7 @@ MonoBehaviour:
   initialSpawnRate: 3
   spawnAreaWidth: 2.75
   spawnAreaHeight: 1.5
-  rollSpeed: 50
+  rollSpeed: 75
   translateSpeed: 3
-  scaleSpeed: {x: 0.25, y: 0.25, z: 0.25}
+  scaleSpeed: {x: 1, y: 1, z: 1}
+  activateCollisionAtScale: 2.5

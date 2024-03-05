@@ -15,8 +15,6 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] float spawnAreaHeight;
     [SerializeField] float rollSpeed;
     [SerializeField] float translateSpeed;
-    [SerializeField] Vector3 scaleSpeed;
-
 
     List<GameObject> Enemies;
     GameObject enemiesParent;
@@ -35,6 +33,7 @@ public class EnemyManager : MonoBehaviour
     private void OnEnable()
     {
         CustomInputManager.OnPressedQ += RollLeft;
+        CustomInputManager.OnPressedE += RollRight;
         CustomInputManager.OnPressedD += TranslateLeft;
         CustomInputManager.OnPressedA += TranslateRight;
         CustomInputManager.OnPressedS += TranslateUp;
@@ -46,6 +45,7 @@ public class EnemyManager : MonoBehaviour
     private void OnDisable()
     {
         CustomInputManager.OnPressedQ -= RollLeft;
+        CustomInputManager.OnPressedE -= RollRight;
         CustomInputManager.OnPressedD -= TranslateLeft;
         CustomInputManager.OnPressedA -= TranslateRight;
         CustomInputManager.OnPressedS -= TranslateUp;
@@ -67,6 +67,7 @@ public class EnemyManager : MonoBehaviour
         for (int i = 0; i < enemyPoolCap; i++)
         {
             GameObject enemyInstance = Instantiate(enemyPrefab, RandomPos(), Quaternion.identity, enemiesParent.transform);
+            enemyInstance.GetComponent<EnemyController>().Initialize(this);
             enemyInstance.SetActive(false);
             Enemies.Add(enemyInstance);
         }
@@ -165,7 +166,6 @@ public class EnemyManager : MonoBehaviour
         {
             Vector3 moveDir = Enemies[i].transform.position - Vector3.zero;
             Enemies[i].transform.position += moveDir * Time.deltaTime;
-            Enemies[i].transform.localScale += scaleSpeed * Time.deltaTime;
         }
     }
 

@@ -4,38 +4,36 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] float translateSpeed;
-    [SerializeField] Vector3 scaleFactor;
-    [SerializeField] float lifetime;
-    EnemyManager enemyManager;
-
-    private void Start()
-    {
-        enemyManager = EnemyManager.Instance;
-    }
+    [SerializeField] float size;
+    [SerializeField] Vector3 speed;
+    EnemyManager enemyManager;    
 
     private void OnEnable()
-    { 
-        //StartCoroutine(Accelerate());
+    {
         transform.localScale = new Vector3(0.01f, 0.01f);
+        StartCoroutine(Move());
     }
 
-    private IEnumerator Accelerate()
+    // Gets called when game is started
+    public void Initialize(EnemyManager enemyManagerInstance)
     {
-        float elapsedTime = 0;
-        while (elapsedTime < lifetime)
+        enemyManager = enemyManagerInstance;
+    }
+
+    private IEnumerator Move()
+    {
+        while (transform.localScale.x < size)
         {
-            transform.Translate((transform.position - Vector3.zero) * translateSpeed * Time.deltaTime);
-            transform.localScale += scaleFactor * Time.deltaTime;
-            elapsedTime += Time.deltaTime;
+            transform.localScale += speed * Time.deltaTime;
             yield return null;
         }
-
+        if(transform.position.x < 3 && transform.position.x > -3 && transform.position.y < 5.5 && transform.position.y > -5.5)
+        {
+            Debug.Log("game over");
+        }
+        else
+        {
+            enemyManager.Release(this);
+        }
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        enemyManager.Release(this);
-    }
-
 }

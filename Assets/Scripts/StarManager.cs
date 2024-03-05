@@ -17,9 +17,8 @@ public class StarManager : MonoBehaviour
     Transform[] Stars;
     int[,] LayerRanges;
     GameObject starsParent;
-    float parallaxLayersReciprocal;
-    float starsPerLayer;
     Vector3 randomPosHolder;
+    GameManager gameManager;
 
 
     private void OnEnable()
@@ -31,7 +30,7 @@ public class StarManager : MonoBehaviour
         CustomInputManager.OnPressedS += PitchDown;
         CustomInputManager.OnPressedW += PitchUp;
         //CustomInputManager.OnMouseMove += Rotate;
-        CustomInputManager.OnPressedLShift += TranslateAwayFromOrigin;
+        //CustomInputManager.OnPressedLShift += TranslateAwayFromOrigin;
     }
 
     private void OnDisable()
@@ -43,27 +42,29 @@ public class StarManager : MonoBehaviour
         CustomInputManager.OnPressedS -= PitchDown;
         CustomInputManager.OnPressedW -= PitchUp;
         //CustomInputManager.OnMouseMove -= Rotate;
-        CustomInputManager.OnPressedLShift -= TranslateAwayFromOrigin;
+        //CustomInputManager.OnPressedLShift -= TranslateAwayFromOrigin;
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameManager.Instance;
         Initialize();
     }
 
     private void Initialize()
     {
         // Calculate these variables ahead of time;
-        parallaxLayersReciprocal = 1f / parallaxLayers;
-        starsPerLayer = totalStars * parallaxLayersReciprocal;
+        float parallaxLayersReciprocal = 1f / parallaxLayers;
+        float starsPerLayer = totalStars * parallaxLayersReciprocal;
 
-        // Calculate parallax layer chunk mins and maxes ahead of time and put them in a multidimensional array
-        LayerRanges = new int[parallaxLayers, 2];
+        // Calculate parallax layer chunk mins, maxes, and translation speeds ahead of time and put them in a multidimensional array
+        LayerRanges = new int[parallaxLayers, 3];
         for(int i = 0; i < parallaxLayers; i++)
         {
-            LayerRanges[i, 0] = Mathf.RoundToInt(starsPerLayer * i);
-            LayerRanges[i, 1] = Mathf.RoundToInt(starsPerLayer * (i + 1));
+            LayerRanges[i, 0] = Mathf.RoundToInt(starsPerLayer * i); // int where each parallax layer starts in Stars array
+            LayerRanges[i, 1] = Mathf.RoundToInt(starsPerLayer * (i + 1)); // int where each parallax layer ends in Stars array
+            LayerRanges[i, 2] = Mathf.RoundToInt(translateSpeed / (i + 1)); // int holding translation speed value for that parallax layer
         }
 
         // Create a new array of transforms and populate it with number of stars equal to totalStars
@@ -71,7 +72,7 @@ public class StarManager : MonoBehaviour
         starsParent = Instantiate(new GameObject("Stars"));
         for(int i = 0; i < totalStars; i++)
         {
-            Stars[i] = Instantiate(starPrefab, RandomPos(1), Quaternion.identity, starsParent.transform).GetComponent<Transform>();
+            Stars[i] = Instantiate(starPrefab, RandomPos(1), Constants.QuaternionIdentity, starsParent.transform).GetComponent<Transform>();
         }
         
     }
@@ -100,10 +101,9 @@ public class StarManager : MonoBehaviour
     {
         for (int i = 0; i < parallaxLayers; i++)
         {
-            float speed = translateSpeed / (i + 1);
             for (int j = LayerRanges[i, 0]; j < LayerRanges[i, 1]; j++)
             {
-                Stars[j].position += Constants.Vector3Right * speed * Time.deltaTime;
+                Stars[j].position += Constants.Vector3Right * LayerRanges[i, 2] * Time.deltaTime;
                 if (Stars[j].position.x > maxWidth)
                     Stars[j].position = RandomPosW();
             }
@@ -114,10 +114,9 @@ public class StarManager : MonoBehaviour
     {
         for (int i = 0; i < parallaxLayers; i++)
         {
-            float speed = translateSpeed / (i + 1);
             for (int j = LayerRanges[i, 0]; j < LayerRanges[i, 1]; j++)
             {
-                Stars[j].position += Constants.Vector3Left * speed * Time.deltaTime;
+                Stars[j].position += Constants.Vector3Left * LayerRanges[i, 2] * Time.deltaTime;
                 if (Stars[j].position.x < -maxWidth)
                     Stars[j].position = RandomPosE();
             }
@@ -138,10 +137,9 @@ public class StarManager : MonoBehaviour
     {
         for (int i = 0; i < parallaxLayers; i++)
         {
-            float speed = translateSpeed / (i + 1);
             for (int j = LayerRanges[i, 0]; j < LayerRanges[i, 1]; j++)
             {
-                Stars[j].position += Constants.Vector3Up * speed * Time.deltaTime;
+                Stars[j].position += Constants.Vector3Up * LayerRanges[i, 2] * Time.deltaTime;
                 if (Stars[j].position.y > maxHeight)
                     Stars[j].position = RandomPosS();
             }
@@ -152,24 +150,32 @@ public class StarManager : MonoBehaviour
     {
         for (int i = 0; i < parallaxLayers; i++)
         {
-            float speed = translateSpeed / (i + 1);
             for (int j = LayerRanges[i, 0]; j < LayerRanges[i, 1]; j++)
             {
-                Stars[j].position += Constants.Vector3Down * speed * Time.deltaTime;
+                Stars[j].position += Constants.Vector3Down * LayerRanges[i, 2] * Time.deltaTime;
                 if (Stars[j].position.y < -maxHeight)
                     Stars[j].position = RandomPosN();
             }
         }
     }
 
-    private void TranslateAwayFromOrigin()
+    public void StartSimulation()
     {
-        for (int i = 0; i < totalStars; i++)
+        StartCoroutine(TranslateAwayFromOrigin());
+    }
+
+    private IEnumerator TranslateAwayFromOrigin()
+    {
+        while(gameManager.isGameOver != true)
         {
-            Stars[i].position += (Stars[i].position - Vector3.zero) * Time.deltaTime;
-            if (Stars[i].position.x < -maxWidth || Stars[i].position.x > maxWidth || Stars[i].position.y > maxHeight || Stars[i].position.y < -maxHeight)
-                Stars[i].position = RandomPos(0.5f);
-        }
+            for (int i = 0; i < totalStars; i++)
+            {
+                Stars[i].position += (Stars[i].position - Vector3.zero) * Time.deltaTime;
+                if (Stars[i].position.x < -maxWidth || Stars[i].position.x > maxWidth || Stars[i].position.y > maxHeight || Stars[i].position.y < -maxHeight)
+                    Stars[i].position = RandomPos(0.5f);
+            }
+            yield return null;
+        }        
     }
 
     private Vector3 RandomPosN()

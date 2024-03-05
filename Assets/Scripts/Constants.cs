@@ -13,4 +13,5 @@ public class Constants
     public static Vector3 Vector3Down = Vector3.down;
     public static Vector3 Vector3Forward = Vector3.forward;
     public static Vector3 Vector3Back = Vector3.back;
+    public static Vector3 Vector3Zero = Vector3.zero;
 }

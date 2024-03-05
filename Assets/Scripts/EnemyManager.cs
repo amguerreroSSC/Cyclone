@@ -9,17 +9,16 @@ public class EnemyManager : MonoBehaviour
     public static EnemyManager Instance { get; private set; }
 
     [SerializeField] GameObject enemyPrefab;
-    [SerializeField] int enemyPoolCap;
+    [SerializeField] int enemyPoolStartCap;
     [SerializeField] float initialSpawnRate;
     [SerializeField] float spawnAreaWidth;
     [SerializeField] float spawnAreaHeight;
     [SerializeField] float rollSpeed;
     [SerializeField] float translateSpeed;
 
-    List<GameObject> Enemies;
-    GameObject enemiesParent;
-    float spawnRate;
-    bool gameOver = false;
+    List<Transform> Enemies;
+    Transform enemiesParent;
+    GameManager gameManager;
 
     private void Awake()
     {
@@ -38,7 +37,7 @@ public class EnemyManager : MonoBehaviour
         CustomInputManager.OnPressedA += TranslateRight;
         CustomInputManager.OnPressedS += TranslateUp;
         CustomInputManager.OnPressedW += TranslateDown;
-        CustomInputManager.OnPressedLShift += MoveAwayFromOrigin;
+        //CustomInputManager.OnPressedLShift += MoveAwayFromOrigin;
         //CustomInputManager.OnMouseMove += Rotate;
     }
 
@@ -50,67 +49,86 @@ public class EnemyManager : MonoBehaviour
         CustomInputManager.OnPressedA -= TranslateRight;
         CustomInputManager.OnPressedS -= TranslateUp;
         CustomInputManager.OnPressedW -= TranslateDown;
-        CustomInputManager.OnPressedLShift -= MoveAwayFromOrigin;
+        //CustomInputManager.OnPressedLShift -= MoveAwayFromOrigin;
         //CustomInputManager.OnMouseMove -= Rotate;
     }
 
     void Start()
     {
+        gameManager = GameManager.Instance;
         Initialize();
-        StartCoroutine(StartSpawningEnemies());
     }
 
     private void Initialize()
     {
-        Enemies = new List<GameObject>(enemyPoolCap);
-        enemiesParent = Instantiate(new GameObject("Enemies"));
-        for (int i = 0; i < enemyPoolCap; i++)
+        Enemies = new List<Transform>(enemyPoolStartCap);
+        enemiesParent = Instantiate(new GameObject("Enemies")).GetComponent<Transform>();
+        for (int i = 0; i < enemyPoolStartCap; i++)
         {
-            GameObject enemyInstance = Instantiate(enemyPrefab, RandomPos(), Quaternion.identity, enemiesParent.transform);
+            GameObject enemyInstance = Instantiate(enemyPrefab, RandomPos(), Constants.QuaternionIdentity, enemiesParent);
             enemyInstance.GetComponent<EnemyController>().Initialize(this);
+            Enemies.Add(enemyInstance.GetComponent<Transform>());
             enemyInstance.SetActive(false);
-            Enemies.Add(enemyInstance);
         }
+    }
+
+    public void StartSimulation()
+    {
+        StartCoroutine(StartSpawningEnemies());
+        StartCoroutine(MoveAwayFromOrigin());
     }
 
     private IEnumerator StartSpawningEnemies()
     {
-        float elapsedTime = 0;
-        float lastSpawnTime = 0;
-        while(gameOver != true)
+        int spawned = 0;
+        float spawnRate = initialSpawnRate;
+        while(gameManager.isGameOver != true)
         {
-            if(elapsedTime > lastSpawnTime + initialSpawnRate)
+            SpawnEnemy();
+            spawned++;
+            if (spawned % 5 == 0)
+                spawnRate *= 1.25f;
+            yield return new WaitForSeconds(spawnRate);
+        }
+    }
+
+    private IEnumerator MoveAwayFromOrigin()
+    {
+        while (gameManager.isGameOver != true)
+        {
+            for (int i = 0; i < enemyPoolStartCap; i++)
             {
-                SpawnEnemy();
-                lastSpawnTime = elapsedTime;
+                Vector3 moveDir = Enemies[i].position - Constants.Vector3Zero;
+                Enemies[i].position += moveDir * Time.deltaTime;
             }
-            elapsedTime += Time.deltaTime;
             yield return null;
         }
     }
 
     private void SpawnEnemy()
     {
-        GameObject enemy = GetEnemy();
-        enemy.transform.position = RandomPos();
-        enemy.SetActive(true);
+        Transform enemy = GetEnemy();
+        enemy.position = RandomPos();
+        enemy.gameObject.SetActive(true);
     }
 
-    private GameObject GetEnemy()
+    private Transform GetEnemy()
     {
-        for(int i = 0; i < enemyPoolCap; i++)
+        for(int i = 0; i < enemyPoolStartCap; i++)
         {
-            if (Enemies[i].activeSelf == false)
+            if (Enemies[i].gameObject.activeSelf == false)
                 return Enemies[i];
         }
         return CloneEnemy();
     }
 
-    private GameObject CloneEnemy()
+    private Transform CloneEnemy()
     {
-        GameObject newEnemy = Instantiate(enemyPrefab, RandomPos(), Quaternion.identity, enemiesParent.transform);
-        Enemies.Add(newEnemy);
-        return newEnemy;
+        GameObject newEnemyInstance = Instantiate(enemyPrefab, RandomPos(), Constants.QuaternionIdentity, enemiesParent);
+        newEnemyInstance.GetComponent<EnemyController>().Initialize(this);
+        Enemies.Add(newEnemyInstance.GetComponent<Transform>());
+        newEnemyInstance.SetActive(false);
+        return newEnemyInstance.GetComponent<Transform>();
     }
 
     public void Release(EnemyController enemy)
@@ -120,63 +138,54 @@ public class EnemyManager : MonoBehaviour
 
     private void TranslateUp()
     {
-        for(int i = 0; i < enemyPoolCap; i++)
+        for(int i = 0; i < enemyPoolStartCap; i++)
         {
-            Enemies[i].transform.position += Vector3.up * translateSpeed * Time.deltaTime;
+            Enemies[i].position += Constants.Vector3Up * translateSpeed * Time.deltaTime;
         }
     }
 
     private void TranslateDown()
     {
-        for (int i = 0; i < enemyPoolCap; i++)
+        for (int i = 0; i < enemyPoolStartCap; i++)
         {
-            Enemies[i].transform.position += Vector3.down * translateSpeed * Time.deltaTime;
+            Enemies[i].position += Constants.Vector3Down * translateSpeed * Time.deltaTime;
         }
     }
 
     private void TranslateRight()
     {
-        for (int i = 0; i < enemyPoolCap; i++)
+        for (int i = 0; i < enemyPoolStartCap; i++)
         {
-            Enemies[i].transform.position += Vector3.right * translateSpeed * Time.deltaTime;
+            Enemies[i].position += Constants.Vector3Right * translateSpeed * Time.deltaTime;
         }
     }
 
     private void TranslateLeft()
     {
-        for (int i = 0; i < enemyPoolCap; i++)
+        for (int i = 0; i < enemyPoolStartCap; i++)
         {
-            Enemies[i].transform.position += Vector3.left * translateSpeed * Time.deltaTime;
+            Enemies[i].position += Constants.Vector3Left * translateSpeed * Time.deltaTime;
         }
     }
 
     private void RollRight()
     {
-        enemiesParent.transform.Rotate(new Vector3(0, 0, 1) * rollSpeed * Time.deltaTime);
+        enemiesParent.Rotate(Constants.Vector3Forward * rollSpeed * Time.deltaTime);
     }
 
     private void RollLeft()
     {
-        enemiesParent.transform.Rotate(new Vector3(0, 0, -1) * rollSpeed * Time.deltaTime);
+        enemiesParent.Rotate(Constants.Vector3Back * rollSpeed * Time.deltaTime);
     }
 
-    private void MoveAwayFromOrigin()
-    {
-        for (int i = 0; i < enemyPoolCap; i++)
-        {
-            Vector3 moveDir = Enemies[i].transform.position - Vector3.zero;
-            Enemies[i].transform.position += moveDir * Time.deltaTime;
-        }
-    }
-
-    private void Rotate(Vector3 dir, float distance)
-    {
-        for (int i = 0; i < enemyPoolCap; i++)
-        {
-            Enemies[i].transform.position += dir * distance * Time.deltaTime;
-        }
+    //private void Rotate(Vector3 dir, float distance)
+    //{
+    //    for (int i = 0; i < enemyPoolStartCap; i++)
+    //    {
+    //        Enemies[i].position += dir * distance * Time.deltaTime;
+    //    }
         
-    }
+    //}
 
     private Vector3 RandomPos()
     {

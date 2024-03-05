@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 1052134343213585387, guid: a55933f84898cc64495c433b564e2434, type: 3}
-  enemyPoolCap: 5
+  enemyPoolStartCap: 10
   initialSpawnRate: 3
   spawnAreaWidth: 2.75
   spawnAreaHeight: 1.5

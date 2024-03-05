@@ -77,7 +77,7 @@ public class CustomInputManager : MonoBehaviour
             OnPressedLShift?.Invoke();
             Debug.Log("LShift");
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             OnPressedSpace?.Invoke();
             Debug.Log("Space");

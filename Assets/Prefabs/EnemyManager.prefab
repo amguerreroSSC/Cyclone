@@ -48,7 +48,7 @@ MonoBehaviour:
   enemyPoolStartCap: 10
   initialSpawnRate: 3
   maxSpawnrate: 0.1
-  spawnAreaWidth: 2
-  spawnAreaHeight: 2
+  spawnAreaWidth: 5
+  spawnAreaHeight: 3
   rollSpeed: 75
   translateSpeed: 3

@@ -1,9 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Xml.Schema;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -30,30 +26,6 @@ public class EnemyManager : MonoBehaviour
             Destroy(this);
         else
             Instance = this;
-    }
-
-    private void OnEnable()
-    {
-        //CustomInputManager.OnPressedQ += RollLeft;
-        //CustomInputManager.OnPressedE += RollRight;
-        //CustomInputManager.OnPressedD += TranslateLeft;
-        //CustomInputManager.OnPressedA += TranslateRight;
-        //CustomInputManager.OnPressedS += TranslateUp;
-        //CustomInputManager.OnPressedW += TranslateDown;
-        //CustomInputManager.OnPressedLShift += MoveAwayFromOrigin;
-        //CustomInputManager.OnMouseMove += Rotate;
-    }
-
-    private void OnDisable()
-    {
-        //CustomInputManager.OnPressedQ -= RollLeft;
-        //CustomInputManager.OnPressedE -= RollRight;
-        //CustomInputManager.OnPressedD -= TranslateLeft;
-        //CustomInputManager.OnPressedA -= TranslateRight;
-        //CustomInputManager.OnPressedS -= TranslateUp;
-        //CustomInputManager.OnPressedW -= TranslateDown;
-        //CustomInputManager.OnPressedLShift -= MoveAwayFromOrigin;
-        //CustomInputManager.OnMouseMove -= Rotate;
     }
 
     void Start()
@@ -99,24 +71,32 @@ public class EnemyManager : MonoBehaviour
     {
         int spawned = 0;
         float spawnRate = initialSpawnRate;
+        int spawnCount = 1;
         while(gameManager.isGameOver != true)
         {
             yield return new WaitForSeconds(spawnRate);
-            SpawnEnemy();
+            SpawnEnemy(spawnCount);
             spawned++;
-            if (spawnRate < maxSpawnrate)
+            if (spawned % 5 == 0)
             {
-                spawnRate *= 0.9f;
-                translateSpeed *= 1.1f;
+                spawnCount++;
+                if(spawnRate > maxSpawnrate)
+                {
+                    spawnRate *= 0.9f;
+                    translateSpeed *= 1.1f;
+                }
             }
         }
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy(int amount)
     {
-        Transform enemy = GetEnemy();
-        enemy.position = RandomPos();
-        enemy.gameObject.SetActive(true);
+        for(int i = 0; i < amount; i++)
+        {
+            Transform enemy = GetEnemy();
+            enemy.position = RandomPos();
+            enemy.gameObject.SetActive(true);
+        }
     }
 
     private Transform GetEnemy()
@@ -200,7 +180,8 @@ public class EnemyManager : MonoBehaviour
 
     public void Restart()
     {
-        for (int i = 0; i < enemyPoolStartCap; i++)
+        int listCount = Enemies.Count;
+        for (int i = 0; i < listCount; i++)
         {
             Enemies[i].gameObject.SetActive(false);
         }

@@ -21,29 +21,29 @@ public class StarManager : MonoBehaviour
     GameManager gameManager;
 
 
-    private void OnEnable()
-    {
-        CustomInputManager.OnPressedQ += RollRight;
-        CustomInputManager.OnPressedE += RollLeft;
-        CustomInputManager.OnPressedD += YawRight;
-        CustomInputManager.OnPressedA += YawLeft;
-        CustomInputManager.OnPressedS += PitchDown;
-        CustomInputManager.OnPressedW += PitchUp;
-        //CustomInputManager.OnMouseMove += Rotate;
-        //CustomInputManager.OnPressedLShift += TranslateAwayFromOrigin;
-    }
+    //private void OnEnable()
+    //{
+    //    CustomInputManager.OnPressedQ += RollRight;
+    //    CustomInputManager.OnPressedE += RollLeft;
+    //    CustomInputManager.OnPressedD += YawRight;
+    //    CustomInputManager.OnPressedA += YawLeft;
+    //    CustomInputManager.OnPressedS += PitchDown;
+    //    CustomInputManager.OnPressedW += PitchUp;
+    //    //CustomInputManager.OnMouseMove += Rotate;
+    //    //CustomInputManager.OnPressedLShift += TranslateAwayFromOrigin;
+    //}
 
-    private void OnDisable()
-    {
-        CustomInputManager.OnPressedQ -= RollRight;
-        CustomInputManager.OnPressedE -= RollLeft;
-        CustomInputManager.OnPressedD -= YawRight;
-        CustomInputManager.OnPressedA -= YawLeft;
-        CustomInputManager.OnPressedS -= PitchDown;
-        CustomInputManager.OnPressedW -= PitchUp;
-        //CustomInputManager.OnMouseMove -= Rotate;
-        //CustomInputManager.OnPressedLShift -= TranslateAwayFromOrigin;
-    }
+    //private void OnDisable()
+    //{
+    //    CustomInputManager.OnPressedQ -= RollRight;
+    //    CustomInputManager.OnPressedE -= RollLeft;
+    //    CustomInputManager.OnPressedD -= YawRight;
+    //    CustomInputManager.OnPressedA -= YawLeft;
+    //    CustomInputManager.OnPressedS -= PitchDown;
+    //    CustomInputManager.OnPressedW -= PitchUp;
+    //    //CustomInputManager.OnMouseMove -= Rotate;
+    //    //CustomInputManager.OnPressedLShift -= TranslateAwayFromOrigin;
+    //}
 
     // Start is called before the first frame update
     void Start()
@@ -161,7 +161,24 @@ public class StarManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        CustomInputManager.OnPressedQ += RollRight;
+        CustomInputManager.OnPressedE += RollLeft;
+        CustomInputManager.OnPressedD += YawRight;
+        CustomInputManager.OnPressedA += YawLeft;
+        CustomInputManager.OnPressedS += PitchDown;
+        CustomInputManager.OnPressedW += PitchUp;
+
         StartCoroutine(TranslateAwayFromOrigin());
+    }
+
+    public void StopSimulation()
+    {
+        CustomInputManager.OnPressedQ -= RollRight;
+        CustomInputManager.OnPressedE -= RollLeft;
+        CustomInputManager.OnPressedD -= YawRight;
+        CustomInputManager.OnPressedA -= YawLeft;
+        CustomInputManager.OnPressedS -= PitchDown;
+        CustomInputManager.OnPressedW -= PitchUp;
     }
 
     private IEnumerator TranslateAwayFromOrigin()

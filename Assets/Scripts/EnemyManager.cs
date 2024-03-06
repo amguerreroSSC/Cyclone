@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Xml.Schema;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -11,6 +13,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] int enemyPoolStartCap;
     [SerializeField] float initialSpawnRate;
+    [SerializeField] float maxSpawnrate;
     [SerializeField] float spawnAreaWidth;
     [SerializeField] float spawnAreaHeight;
     [SerializeField] float rollSpeed;
@@ -31,24 +34,24 @@ public class EnemyManager : MonoBehaviour
 
     private void OnEnable()
     {
-        CustomInputManager.OnPressedQ += RollLeft;
-        CustomInputManager.OnPressedE += RollRight;
-        CustomInputManager.OnPressedD += TranslateLeft;
-        CustomInputManager.OnPressedA += TranslateRight;
-        CustomInputManager.OnPressedS += TranslateUp;
-        CustomInputManager.OnPressedW += TranslateDown;
+        //CustomInputManager.OnPressedQ += RollLeft;
+        //CustomInputManager.OnPressedE += RollRight;
+        //CustomInputManager.OnPressedD += TranslateLeft;
+        //CustomInputManager.OnPressedA += TranslateRight;
+        //CustomInputManager.OnPressedS += TranslateUp;
+        //CustomInputManager.OnPressedW += TranslateDown;
         //CustomInputManager.OnPressedLShift += MoveAwayFromOrigin;
         //CustomInputManager.OnMouseMove += Rotate;
     }
 
     private void OnDisable()
     {
-        CustomInputManager.OnPressedQ -= RollLeft;
-        CustomInputManager.OnPressedE -= RollRight;
-        CustomInputManager.OnPressedD -= TranslateLeft;
-        CustomInputManager.OnPressedA -= TranslateRight;
-        CustomInputManager.OnPressedS -= TranslateUp;
-        CustomInputManager.OnPressedW -= TranslateDown;
+        //CustomInputManager.OnPressedQ -= RollLeft;
+        //CustomInputManager.OnPressedE -= RollRight;
+        //CustomInputManager.OnPressedD -= TranslateLeft;
+        //CustomInputManager.OnPressedA -= TranslateRight;
+        //CustomInputManager.OnPressedS -= TranslateUp;
+        //CustomInputManager.OnPressedW -= TranslateDown;
         //CustomInputManager.OnPressedLShift -= MoveAwayFromOrigin;
         //CustomInputManager.OnMouseMove -= Rotate;
     }
@@ -60,13 +63,12 @@ public class EnemyManager : MonoBehaviour
     }
 
     private void Initialize()
-    {
+    {   
         Enemies = new List<Transform>(enemyPoolStartCap);
         enemiesParent = Instantiate(new GameObject("Enemies")).GetComponent<Transform>();
         for (int i = 0; i < enemyPoolStartCap; i++)
         {
             GameObject enemyInstance = Instantiate(enemyPrefab, RandomPos(), Constants.QuaternionIdentity, enemiesParent);
-            enemyInstance.GetComponent<EnemyController>().Initialize(this);
             Enemies.Add(enemyInstance.GetComponent<Transform>());
             enemyInstance.SetActive(false);
         }
@@ -74,8 +76,23 @@ public class EnemyManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        CustomInputManager.OnPressedQ += RollLeft;
+        CustomInputManager.OnPressedE += RollRight;
+        CustomInputManager.OnPressedD += TranslateLeft;
+        CustomInputManager.OnPressedA += TranslateRight;
+        CustomInputManager.OnPressedS += TranslateUp;
+        CustomInputManager.OnPressedW += TranslateDown;
         StartCoroutine(StartSpawningEnemies());
-        StartCoroutine(MoveAwayFromOrigin());
+    }
+
+    public void StopSimulation()
+    {
+        CustomInputManager.OnPressedQ -= RollLeft;
+        CustomInputManager.OnPressedE -= RollRight;
+        CustomInputManager.OnPressedD -= TranslateLeft;
+        CustomInputManager.OnPressedA -= TranslateRight;
+        CustomInputManager.OnPressedS -= TranslateUp;
+        CustomInputManager.OnPressedW -= TranslateDown;
     }
 
     private IEnumerator StartSpawningEnemies()
@@ -84,24 +101,14 @@ public class EnemyManager : MonoBehaviour
         float spawnRate = initialSpawnRate;
         while(gameManager.isGameOver != true)
         {
+            yield return new WaitForSeconds(spawnRate);
             SpawnEnemy();
             spawned++;
-            if (spawned % 5 == 0)
-                spawnRate *= 1.25f;
-            yield return new WaitForSeconds(spawnRate);
-        }
-    }
-
-    private IEnumerator MoveAwayFromOrigin()
-    {
-        while (gameManager.isGameOver != true)
-        {
-            for (int i = 0; i < enemyPoolStartCap; i++)
+            if (spawnRate < maxSpawnrate)
             {
-                Vector3 moveDir = Enemies[i].position - Constants.Vector3Zero;
-                Enemies[i].position += moveDir * Time.deltaTime;
+                spawnRate *= 0.9f;
+                translateSpeed *= 1.1f;
             }
-            yield return null;
         }
     }
 
@@ -125,7 +132,6 @@ public class EnemyManager : MonoBehaviour
     private Transform CloneEnemy()
     {
         GameObject newEnemyInstance = Instantiate(enemyPrefab, RandomPos(), Constants.QuaternionIdentity, enemiesParent);
-        newEnemyInstance.GetComponent<EnemyController>().Initialize(this);
         Enemies.Add(newEnemyInstance.GetComponent<Transform>());
         newEnemyInstance.SetActive(false);
         return newEnemyInstance.GetComponent<Transform>();
@@ -190,5 +196,13 @@ public class EnemyManager : MonoBehaviour
     private Vector3 RandomPos()
     {
         return new Vector3(Random.Range(-spawnAreaHeight, spawnAreaWidth), Random.Range(-spawnAreaHeight, spawnAreaHeight));
+    }
+
+    public void Restart()
+    {
+        for (int i = 0; i < enemyPoolStartCap; i++)
+        {
+            Enemies[i].gameObject.SetActive(false);
+        }
     }
 }

@@ -9,7 +9,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] Vector3 RotationSpeed;
     [SerializeField] float TranslationSpeed;
     [SerializeField] List<Sprite> sprites;
-    GameManager gameManager;
+    //GameManager gameManager; Removing memory that's not currently being used - Elon
     SpriteRenderer spriteRenderer;
     int spriteListLength;
 

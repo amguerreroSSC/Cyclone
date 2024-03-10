@@ -65,6 +65,8 @@ public class EnemyManager : MonoBehaviour
         CustomInputManager.OnPressedA -= TranslateRight;
         CustomInputManager.OnPressedS -= TranslateUp;
         CustomInputManager.OnPressedW -= TranslateDown;
+        //Added Function to stop Asteriods from spawning when game is over
+        StopAllCoroutines();
     }
 
     private IEnumerator StartSpawningEnemies()

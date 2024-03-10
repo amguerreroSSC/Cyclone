@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
     {
         while(isGameOver != true)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
             Score++;
             scoreText.text = Score.ToString();
         }
@@ -69,9 +69,11 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         starManager.StopSimulation();
         enemyManager.StopSimulation();
+        StopCoroutine(StartScoring());
         loseText.gameObject.SetActive(true);
         startText.gameObject.SetActive(true);
         startText.text = "Press R to Restart";
+        Score -= 1;// Score doesn't go up after game ends
     }
 
     private void Restart()
@@ -81,6 +83,8 @@ public class GameManager : MonoBehaviour
             loseText.gameObject.SetActive(false);
             startText.gameObject.SetActive(false);
             enemyManager.Restart();
+            Score = 0;
+            scoreText.text = Score.ToString(); //Updates score back to 0 when game restarts
             StartSimulation();
         }
     }
